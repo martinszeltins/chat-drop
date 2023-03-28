@@ -76,6 +76,10 @@ app.whenReady().then(() => {
     globalShortcut.register('CommandOrControl+I', () => {
         toggleMainWindow()
     })
+
+    globalShortcut.register('CommandOrControl+1', () => {
+        toggleMainWindow()
+    })
 })
 
 const setWindowPosition = (x: number, y: number) => {
