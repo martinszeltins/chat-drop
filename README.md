@@ -8,3 +8,9 @@
     <img src="https://raw.githubusercontent.com/martinszeltins/chat-drop/master/assets/img/chatdrop2.gif" alt="Project Demo" width="500">
   </p>
 </p>
+
+#### Build Instructions
+
+```bash
+$ node_modules/.bin/electron-builder build --linux AppImage
+```
