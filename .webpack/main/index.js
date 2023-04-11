@@ -922,8 +922,48 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const os = __importStar(__webpack_require__(/*! os */ "os"));
+const fs = __importStar(__webpack_require__(/*! fs */ "fs"));
 const path = __importStar(__webpack_require__(/*! path */ "path"));
 const electron_1 = __webpack_require__(/*! electron */ "electron");
+const appName = 'chat-drop';
+const configHome = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
+const appConfigDir = path.join(configHome, appName);
+const settingsFile = path.join(appConfigDir, 'settings.json');
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+// Create the config directory if it doesn't exist
+if (!fs.existsSync(appConfigDir)) {
+    fs.mkdirSync(appConfigDir, { recursive: true });
+}
+const getWindowBounds = () => {
+    const primaryDisplay = electron_1.screen.getPrimaryDisplay();
+    const width = primaryDisplay.size.width - 100;
+    const height = primaryDisplay.size.height - 300;
+    // Center the window in the center of the primary screen
+    const bounds = electron_1.screen.getPrimaryDisplay().bounds;
+    const x = Math.floor(bounds.x + (bounds.width - width) / 2);
+    const y = Math.floor(bounds.y + (bounds.height - height) / 2) - 130;
+    // If a settings file exists with window position, use that instead, otherwise return the default and save them to the settings file
+    if (fs.existsSync(settingsFile)) {
+        const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+        return { x: settings.x, y: settings.y, width, height };
+    }
+    else {
+        const windowBounds = { x, y, width, height };
+        fs.writeFileSync(settingsFile, JSON.stringify({ x, y }, null, 2));
+        return windowBounds;
+    }
+};
 if (__webpack_require__(/*! electron-squirrel-startup */ "./node_modules/electron-squirrel-startup/index.js")) {
     electron_1.app.quit();
 }
@@ -936,20 +976,22 @@ const createWindow = () => {
         height: height,
         frame: false,
         resizable: false,
-        transparent: true,
         maximizable: false,
         alwaysOnTop: true,
+        transparent: false,
         fullscreenable: false,
         webPreferences: {
             preload: path.join(__dirname, '../renderer/main_window/preload.js'),
             allowRunningInsecureContent: true,
             webviewTag: true,
-            contextIsolation: false
-        }
+            contextIsolation: false,
+        },
     });
     setWindowPosition(x, y);
     mainWindow.loadURL('https://chat.openai.com/chat?model=gpt-4');
-    mainWindow.loadURL('https://chat.openai.com/chat?model=gpt-4').then(() => {
+    mainWindow
+        .loadURL('https://chat.openai.com/chat?model=gpt-4')
+        .then(() => {
         mainWindow.webContents.executeJavaScript(`
             window.addEventListener("keydown", (event) => {
                 if (event.key === "Escape") {
@@ -957,6 +999,34 @@ const createWindow = () => {
                 }
             });
         `);
+    })
+        .catch(() => {
+        mainWindow.hide();
+        isMainWindowVisible = false;
+    });
+    mainWindow.on('move', debounce(() => {
+        const [x, y] = mainWindow.getPosition();
+        // If settings file exists, update the window position, otherwise create the file and save the window position
+        if (fs.existsSync(settingsFile)) {
+            const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+            settings.x = x;
+            settings.y = y;
+            fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2));
+        }
+        else {
+            fs.writeFileSync(settingsFile, JSON.stringify({ x, y }, null, 2));
+        }
+    }, 2000));
+    hideWindowIfNoInternetConnection();
+};
+const hideWindowIfNoInternetConnection = () => {
+    mainWindow.webContents.on('did-fail-load', () => {
+        mainWindow.hide();
+        isMainWindowVisible = false;
+    });
+    fetch('https://www.google.com').catch(() => {
+        mainWindow.hide();
+        isMainWindowVisible = false;
     });
 };
 const toggleMainWindow = () => {
@@ -993,16 +1063,6 @@ electron_1.app.whenReady().then(() => {
 });
 const setWindowPosition = (x, y) => {
     mainWindow.setPosition(x, y);
-};
-const getWindowBounds = () => {
-    const primaryDisplay = electron_1.screen.getPrimaryDisplay();
-    const width = primaryDisplay.size.width - 100;
-    const height = primaryDisplay.size.height - 300;
-    // Center the window in the center of the primary screen
-    const bounds = electron_1.screen.getPrimaryDisplay().bounds;
-    const x = Math.floor(bounds.x + ((bounds.width - width) / 2));
-    const y = Math.floor(bounds.y + ((bounds.height - height) / 2)) - 130;
-    return { x, y, width, height };
 };
 
 
@@ -1049,6 +1109,17 @@ module.exports = require("fs");
 
 "use strict";
 module.exports = require("net");
+
+/***/ }),
+
+/***/ "os":
+/*!*********************!*\
+  !*** external "os" ***!
+  \*********************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("os");
 
 /***/ }),
 

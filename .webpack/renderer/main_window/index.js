@@ -385,7 +385,7 @@ eval("//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("08868cfa406b0e6b8590")
+/******/ 		__webpack_require__.h = () => ("bdbe7d8bc5a04bc3eebe")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
@@ -850,7 +850,7 @@ eval("//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset
 /******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
-/******/ 	if (typeof __webpack_require__ !== 'undefined') __webpack_require__.ab = "/home/martins/Programming/ChatDrop/.webpack/renderer" + "/native_modules/";
+/******/ 	if (typeof __webpack_require__ !== 'undefined') __webpack_require__.ab = "/home/martins/Programming/chat-drop/.webpack/renderer" + "/native_modules/";
 /******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
