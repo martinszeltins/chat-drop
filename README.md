@@ -9,6 +9,9 @@
   </p>
 </p>
 
+#### Info
+The app is hidden by default when launched, press `Ctrl+I` to show it. The app will be hidden again when you press `Ctrl+I` again.
+
 #### Build Instructions
 
 ```bash
