@@ -988,9 +988,7 @@ const createWindow = () => {
         },
     });
     setWindowPosition(x, y);
-    mainWindow.loadURL('https://chat.openai.com/chat?model=gpt-4');
-    mainWindow
-        .loadURL('https://chat.openai.com/chat?model=gpt-4')
+    mainWindow.loadURL('https://chat.openai.com/chat?model=gpt-4')
         .then(() => {
         mainWindow.webContents.executeJavaScript(`
             window.addEventListener("keydown", (event) => {
@@ -1017,6 +1015,14 @@ const createWindow = () => {
             fs.writeFileSync(settingsFile, JSON.stringify({ x, y }, null, 2));
         }
     }, 2000));
+    // Hide window on start
+    mainWindow.hide();
+    isMainWindowVisible = false;
+    // Really make sure the window is hidden
+    setTimeout(() => {
+        mainWindow.hide();
+        isMainWindowVisible = false;
+    }, 2000);
     hideWindowIfNoInternetConnection();
 };
 const hideWindowIfNoInternetConnection = () => {

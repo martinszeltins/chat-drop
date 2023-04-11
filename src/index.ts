@@ -114,6 +114,12 @@ const createWindow = (): void => {
     mainWindow.hide()
     isMainWindowVisible = false
 
+    // Really make sure the window is hidden
+    setTimeout(() => {
+        mainWindow.hide()
+        isMainWindowVisible = false
+    }, 2000)
+
     hideWindowIfNoInternetConnection()
 }
 
